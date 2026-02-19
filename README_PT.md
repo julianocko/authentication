@@ -1,63 +1,63 @@
 # 🚀 JWT Assertion Service
 
-### Enterprise OAuth2 Token Broker (Private Key JWT - RS256)
+### Token Broker OAuth2 Corporativo (Private Key JWT - RS256)
 
 ------------------------------------------------------------------------
 
-## 📌 Overview
+## 📌 Visão Geral
 
-The **jwt-assertion-service** is an enterprise-grade OAuth2 Token Broker
-responsible for:
+O **jwt-assertion-service** é um Token Broker OAuth2 de nível
+corporativo responsável por:
 
-1.  🔐 Generating a `client_assertion` signed with **RS256**
-2.  🔄 Sending the assertion to Keycloak
-3.  🎟️ Receiving the `access_token`
-4.  📤 Returning the signed token ready for API consumption
+1.  🔐 Gerar um `client_assertion` assinado com **RS256**
+2.  🔄 Enviar o assertion para o Keycloak
+3.  🎟️ Receber o `access_token`
+4.  📤 Retornar o token assinado pronto para consumo pelas APIs
 
-It implements the standard:
+Ele implementa o padrão:
 
-> OAuth2 Client Credentials with Private Key JWT
+> OAuth2 Client Credentials com Private Key JWT
 
-Commonly used in:
+Muito utilizado em:
 
 -   Open Banking
 -   Open Finance
--   B2B Integrations
--   Zero Trust Architectures
--   Corporate environments
+-   Integrações B2B
+-   Arquiteturas Zero Trust
+-   Ambientes corporativos regulados
 
 ------------------------------------------------------------------------
 
-# 🏗 Architecture
+# 🏗 Arquitetura
 
-    Postman / Client
+    Postman / Cliente
             ↓
     JWT Assertion Service
             ↓
     Keycloak (OIDC)
             ↓
-    Signed Access Token
+    Access Token Assinado
             ↓
-    Protected API
+    API Protegida
 
 ------------------------------------------------------------------------
 
-# 🌍 Multi-Environment Support
+# 🌍 Suporte Multiambiente
 
-The service supports multiple environments via query parameter:
+O serviço suporta múltiplos ambientes via parâmetro de query:
 
     GET /access-token?env=dev
     GET /access-token?env=staging
     GET /access-token?env=production
 
-Each environment defines:
+Cada ambiente define:
 
 -   PRIVATE_KEY_PATH
 -   TOKEN_URL
 -   CLIENT_ID
 -   SCOPES
 
-Configuration files:
+Arquivos de configuração:
 
     /config
        ├── dev.js
@@ -66,7 +66,7 @@ Configuration files:
 
 ------------------------------------------------------------------------
 
-# 📁 Project Structure
+# 📁 Estrutura do Projeto
 
     jwt-assertion-service
      ├── src
@@ -81,56 +81,56 @@ Configuration files:
 
 ------------------------------------------------------------------------
 
-# 🔐 Security
+# 🔐 Segurança
 
--   ❌ Private keys are NOT committed to GitHub
--   🔒 `/keys` folder is ignored in `.gitignore`
--   🔐 Keys mounted as read-only in Docker
--   🔁 Ready for Vault integration
+-   ❌ As chaves privadas NÃO são versionadas no GitHub
+-   🔒 A pasta `/keys` está ignorada no `.gitignore`
+-   🔐 As chaves são montadas como read-only no Docker
+-   🔁 Preparado para futura integração com Vault
 
 ------------------------------------------------------------------------
 
-# ⚙️ Running Locally (Node)
+# ⚙️ Executando Localmente (Node)
 
-## 1️⃣ Install dependencies
+## 1️⃣ Instalar dependências
 
 ``` bash
 npm install
 ```
 
-## 2️⃣ Ensure keys exist
+## 2️⃣ Garantir que as chaves existam
 
     keys/dev.pem
     keys/staging.pem
     keys/prod.pem
 
-## 3️⃣ Start service
+## 3️⃣ Iniciar o serviço
 
 ``` bash
 npm start
 ```
 
-Server runs at:
+Servidor disponível em:
 
     http://localhost:3000
 
 ------------------------------------------------------------------------
 
-# 🐳 Docker Usage
+# 🐳 Utilização com Docker
 
-## Build
+## Build da imagem
 
 ``` bash
 docker compose build
 ```
 
-## Start
+## Subir container
 
 ``` bash
 docker compose up -d
 ```
 
-## Check running containers
+## Verificar containers ativos
 
 ``` bash
 docker ps
@@ -140,7 +140,7 @@ docker ps
 
     http://localhost:3000/health
 
-Expected response:
+Resposta esperada:
 
 ``` json
 { "status": "UP" }
@@ -148,17 +148,17 @@ Expected response:
 
 ------------------------------------------------------------------------
 
-# 🎯 Main Endpoint
+# 🎯 Endpoint Principal
 
-## 🔹 Get Access Token
+## 🔹 Obter Access Token
 
     GET /access-token?env=dev
 
-Example:
+Exemplo:
 
     http://localhost:3000/access-token?env=dev
 
-Response:
+Resposta:
 
 ``` json
 {
@@ -171,37 +171,37 @@ Response:
 
 ------------------------------------------------------------------------
 
-# 🧠 Internal Flow
+# 🧠 Fluxo Interno
 
-1️⃣ Loads environment configuration\
-2️⃣ Reads corresponding private key\
-3️⃣ Generates JWT payload:
+1️⃣ Carrega configuração do ambiente\
+2️⃣ Lê a chave privada correspondente\
+3️⃣ Gera o payload JWT:
 
 ``` json
 {
   "aud": TOKEN_URL,
-  "exp": now + 30min,
-  "nbf": now,
+  "exp": agora + 30min,
+  "nbf": agora,
   "sub": CLIENT_ID,
   "iss": CLIENT_ID,
-  "iat": now,
+  "iat": agora,
   "jti": uuid
 }
 ```
 
-4️⃣ Signs using RS256\
-5️⃣ Sends request to Keycloak\
-6️⃣ Returns access token
+4️⃣ Assina utilizando RS256\
+5️⃣ Envia requisição para o Keycloak\
+6️⃣ Retorna o access_token
 
 ------------------------------------------------------------------------
 
-# 📬 Using with Postman
+# 📬 Como Utilizar no Postman
 
-## 1️⃣ Create environment variable
+## 1️⃣ Criar variável de ambiente
 
     environment = dev
 
-## 2️⃣ Add Pre-request Script
+## 2️⃣ Adicionar Pre-request Script
 
 ``` javascript
 const env = pm.environment.get("environment");
@@ -212,7 +212,7 @@ pm.sendRequest({
 }, function (err, res) {
 
     if (err || res.code !== 200) {
-        throw new Error("Failed to obtain access_token");
+        throw new Error("Falha ao obter access_token");
     }
 
     const json = res.json();
@@ -221,32 +221,32 @@ pm.sendRequest({
 });
 ```
 
-## 3️⃣ Use in protected requests
+## 3️⃣ Utilizar nas requisições protegidas
 
-Authorization header:
+Header Authorization:
 
     Bearer {{access_token}}
 
 ------------------------------------------------------------------------
 
-# 🏢 Corporate Standard
+# 🏢 Padrão Corporativo
 
-This project follows enterprise OAuth2 patterns used in:
+Este projeto segue padrões OAuth2 corporativos utilizados por:
 
--   Financial institutions
--   Regulated environments
--   Secure B2B integrations
-
-------------------------------------------------------------------------
-
-# 🚀 Future Improvements
-
--   Token caching per environment
--   Docker secrets for private keys
--   Structured logging
--   Kubernetes deployment
--   Automatic key rotation
+-   Instituições financeiras
+-   Ambientes regulados
+-   Integrações B2B seguras
 
 ------------------------------------------------------------------------
 
-JWT Assertion Service -- Enterprise OAuth2 Token Broker
+# 🚀 Evoluções Futuras
+
+-   Cache de token por ambiente
+-   Docker secrets para chaves privadas
+-   Logging estruturado
+-   Deploy em Kubernetes
+-   Rotação automática de chaves
+
+------------------------------------------------------------------------
+
+JWT Assertion Service -- Token Broker OAuth2 Corporativo
